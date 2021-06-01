@@ -5,7 +5,7 @@
 This package simplifies the use of Functional Mock-Up Interface compliant models for Machine Learning and Simulation purposes.
 
 ## General
-The interfacing of simulation models with machine learning algorithms such as [reinforcement learing]{https://en.wikipedia.org/wiki/Reinforcement_learning) is complex and requires custom software bindings. FMI-MLC seeks to bridge this gap by employing the [Funcitional Mock-Up Interface (FMI)](https://fmi-standard.org/), an industry standard to export and interface with simulation models, and [OpenAI's Gym](https://fmi-standard.org/), a standard Python interface for machine learning.
+The interfacing of simulation models with machine learning algorithms such as [reinforcement learing](https://en.wikipedia.org/wiki/Reinforcement_learning) is complex and requires custom software bindings. FMI-MLC seeks to bridge this gap by employing the [Funcitional Mock-Up Interface (FMI)](https://fmi-standard.org/), an industry standard to export and interface with simulation models, and [OpenAI's Gym](https://fmi-standard.org/), a standard Python interface for machine learning.
 
 *Please note that the FMI-MLC package is still under active development. Please open an issue for specific questions*
 
