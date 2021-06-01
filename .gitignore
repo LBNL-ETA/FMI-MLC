@@ -1,0 +1,5 @@
+*.pyc
+*.json
+*checkpoint.ipynb
+**/.ipynb_checkpoints/*
+*_log.txt
