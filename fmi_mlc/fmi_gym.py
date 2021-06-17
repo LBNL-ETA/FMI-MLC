@@ -87,7 +87,7 @@ class fmi_gym(gym.Env):
             from pyfmi import load_fmu
             self.load_fmu = load_fmu
             
-    def configure_fmu(self, ext_param, start_time):
+    def configure_fmu(self):
         '''
         Load and setup the FMU.
         
@@ -104,17 +104,21 @@ class fmi_gym(gym.Env):
         # Parameterize FMU
         param = self.parameter['fmu_param']
         param.update(self.parameter['inputs'])
-        param.update(ext_param)
         if param != {}:
             self.fmu.set(list(param.keys()), list(param.values()))
             
         # Initizlaize FMU
-        self.fmu.setup_experiment(start_time=start_time,
-                                  stop_time=start_time+1,
+        self.fmu.setup_experiment(start_time=self.parameter['fmu_start_time'],
+                                  stop_time=self.parameter['fmu_final_time'],
                                   stop_time_defined=False,
                                   tolerance=self.parameter['fmu_tolerance'])
         self.fmu.initialize()
         self.fmu_loaded = True
+        
+        # Warmup
+        self.fmu_time = self.fmu.time
+        step_size = self.parameter['fmu_warmup_time'] - self.fmu_time
+        self.fmu.do_step(current_t=self.fmu_time, step_size=step_size)
         self.fmu_time = self.fmu.time
         
     def evaluate_fmu(self, inputs):
@@ -192,8 +196,8 @@ class fmi_gym(gym.Env):
         self.data = pd.DataFrame()
         # Load FMU
         if not self.fmu_loaded and self.parameter['init_fmu']:
-            self.configure_fmu({}, self.parameter['fmu_start_time'])
-        self.state = np.array([[v[0] for v in self.fmu.get(self.parameter['observation_names'])]])
+            self.configure_fmu()
+        self.state = self.fmu.get(self.parameter['observation_names'])
         if self.resetprocessor:
             self.data = self.resetprocessor.do_calc(self.data, self.init)
         return self.state

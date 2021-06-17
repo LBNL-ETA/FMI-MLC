@@ -15,6 +15,7 @@ def get_default_parameter():
         fmu_step_size (int): Step size of the FMU in seconds, default 60*60.
         fmu_path (str): Path to the .fmu file, default ''.
         fmu_start_time (float): Start time of the FMU in seconds, default 0.
+        fmu_warmup_time (float): The warmup time of the FMU in seconds, default 0.
         fmu_final_time (float): Final time of the FMU in seconds, default 24*60*60.
         fmu_loglevel (int): Log level of the fmu with 0: none and 5: debug, default 4.
         fmu_kind (str): Type of FMU where currently only co-simulation is supported, default 'cs'.
@@ -61,6 +62,7 @@ def get_default_parameter():
     parameter['fmu_step_size'] = 60*60
     parameter['fmu_path'] = ''
     parameter['fmu_start_time'] = 0
+    parameter['fmu_warmup_time'] = 0
     parameter['fmu_final_time'] = 24*60*60
     parameter['fmu_loglevel'] = 4
     parameter['fmu_kind'] = 'cs'
