@@ -31,7 +31,8 @@ def get_default_parameter():
         observation_names (list): Lables of fmi_gym observations, default [].
         observation_min (np.array): Lower observation limit, default -1e6.
         observation_max (np.array): Upper observation limit, default -1e6.
-        internal_observation_names (list): List of additional observations not returned through fmi_mlc, default [].
+        hidden_observation_names (list): List of hidden observations acquired but not returned as state, default [].
+        external_observations (dict): Observations which are calculated outside of FMU and default values, default {}.
         reward_names (list): Lables of fmi_gym rewards, default [].
         
     The #class must be defined as:
@@ -79,6 +80,7 @@ def get_default_parameter():
     parameter['observation_names'] = []
     parameter['observation_min'] = -1e6
     parameter['observation_max'] = 1e6
-    parameter['internal_observation_names'] = []
+    parameter['hidden_observation_names'] = []
+    parameter['external_observations'] = {}
     parameter['reward_names'] = []
     return parameter

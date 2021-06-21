@@ -30,7 +30,8 @@ class fmi_gym(gym.Env):
         # Parse Configuration
         self.seed = self.parameter['seed']
         self.precision = eval('np.{}'.format(self.parameter['precision']))
-        
+        self.parameter['fmu_observation_names'] = list(set(self.parameter['observation_names']) \
+                                                       - set(self.parameter['external_observations'].keys()))        
         self.fmu_time = 0
         self.data = pd.DataFrame()
         self.fmu_loaded = False
@@ -137,7 +138,7 @@ class fmi_gym(gym.Env):
         
         # Results
         self.fmu_time = self.fmu.time
-        names = self.parameter['observation_names'] + self.parameter['internal_observation_names'] + \
+        names = self.parameter['fmu_observation_names'] + self.parameter['hidden_observation_names'] + \
             self.parameter['reward_names']
         res = self.fmu.get(names)
         res = pd.Series(res, index=names)
@@ -193,11 +194,16 @@ class fmi_gym(gym.Env):
         ''' reset environment '''
         self.fmu_loaded = False
         self.init = True
-        self.data = pd.DataFrame()
+        self.data = pd.DataFrame({'time': [0]}, index=[0])
         # Load FMU
         if not self.fmu_loaded and self.parameter['init_fmu']:
             self.configure_fmu()
-        self.state = self.fmu.get(self.parameter['observation_names'])
+        for k in self.parameter['observation_names']:
+            if k in self.parameter['fmu_observation_names']:
+                self.data.loc[0, k] = self.fmu.get(k)
+            else:
+                self.data.loc[0, k] = self.parameter['external_observations'][k]
+        self.state = self.data[self.parameter['observation_names']].values
         if self.resetprocessor:
             self.data = self.resetprocessor.do_calc(self.data, self.init)
         return self.state
