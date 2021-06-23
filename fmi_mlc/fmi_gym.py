@@ -51,6 +51,12 @@ class fmi_gym(gym.Env):
         else:
             self.postprocessor = None
             
+        # Use Python postprocessing after calling FMU
+        if self.parameter['stateprocessor']:
+            self.stateprocessor = self.parameter['stateprocessor'](self.parameter)
+        else:
+            self.stateprocessor = None
+            
         # Function to process on reset
         if self.parameter['resetprocessor']:
             self.resetprocessor = self.parameter['resetprocessor'](self.parameter)
@@ -118,7 +124,9 @@ class fmi_gym(gym.Env):
         
         # Warmup
         self.fmu_time = self.fmu.time
-        step_size = self.parameter['fmu_warmup_time'] - self.fmu_time
+        start_time = self.parameter['fmu_warmup_time'] if self.parameter['fmu_warmup_time'] \
+            else self.parameter['fmu_start_time']
+        step_size = start_time - self.fmu_time
         self.fmu.do_step(current_t=self.fmu_time, step_size=step_size)
         self.fmu_time = self.fmu.time
         
@@ -130,7 +138,8 @@ class fmi_gym(gym.Env):
         del inputs['time']
         
         # Set inputs
-        self.fmu.set(inputs.columns.values, inputs.values[0])
+        cols = [c for c in inputs.columns if c not in self.parameter['hidden_input_names']]
+        self.fmu.set(inputs[cols].columns.values, inputs[cols].values[0])
 
         # Compute FMU
         step_size = inputs.index[0] - self.fmu_time
@@ -175,8 +184,10 @@ class fmi_gym(gym.Env):
         
         # Outputs
         reward = data['reward'].values[0]
-        info = {'data': data}
+        info = {'data': data.to_json()}
         self.state = data[self.parameter['observation_names']].values
+        if self.stateprocessor:
+            self.state = self.stateprocessor.do_calc(self.state, self.init)
         if self.fmu_time >= self.parameter['fmu_final_time']:
             done = True
         else:
@@ -195,6 +206,8 @@ class fmi_gym(gym.Env):
         self.fmu_loaded = False
         self.init = True
         self.data = pd.DataFrame({'time': [0]}, index=[0])
+        if self.resetprocessor:
+            self.data, self.parameter = self.resetprocessor.do_calc(self.data, self.parameter, self.init)
         # Load FMU
         if not self.fmu_loaded and self.parameter['init_fmu']:
             self.configure_fmu()
@@ -204,8 +217,6 @@ class fmi_gym(gym.Env):
             else:
                 self.data.loc[0, k] = self.parameter['external_observations'][k]
         self.state = self.data[self.parameter['observation_names']].values
-        if self.resetprocessor:
-            self.data = self.resetprocessor.do_calc(self.data, self.init)
         return self.state
         
     def render(self):

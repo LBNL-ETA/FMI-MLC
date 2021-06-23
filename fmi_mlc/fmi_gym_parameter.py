@@ -5,17 +5,18 @@ def get_default_parameter():
     fmi_gym parameter:
         precision (str): Precision of data exchange, default 'float32'.
         seed (int): Seed for np.random, default None.
-        preprocessor (#class): Custom Python function to pre-process data before FMU, default None.
-        postprocessor (#class): Custom Python function to post-process data after FMU, default None.
+        preprocessor (#classA): Custom Python function to pre-process data before FMU, default None.
+        postprocessor (#classA): Custom Python function to post-process data after FMU, default None.
         reset_on_init (bool): Reset environment when initializing, default False. 
         store_data (bool): Store inputs, FMU outputs, and reward in self.data, default False.
         init_fmu (bool): Initialize FMU when fmi_gym resets, default True.
-        resetprocessor (#class): Custom Python function executed on fmi_gym reset, default None.
+        stateprocessor (#classA): Custom Python function to midify state object, default None.
+        resetprocessor (#classB): Custom Python function executed on fmi_gym reset, default None.
     fmu parameter:
         fmu_step_size (int): Step size of the FMU in seconds, default 60*60.
         fmu_path (str): Path to the .fmu file, default ''.
         fmu_start_time (float): Start time of the FMU in seconds, default 0.
-        fmu_warmup_time (float): The warmup time of the FMU in seconds, default 0.
+        fmu_warmup_time (float): The warmup time of the FMU in seconds, default None.
         fmu_final_time (float): Final time of the FMU in seconds, default 24*60*60.
         fmu_loglevel (int): Log level of the fmu with 0: none and 5: debug, default 4.
         fmu_kind (str): Type of FMU where currently only co-simulation is supported, default 'cs'.
@@ -25,6 +26,7 @@ def get_default_parameter():
         inputs (dict): Static inputs of the FMU to be set on do_step, default {}.
         inputs_map (dict): Renaming of fmi_gym inputs to FMU inputs, default {}.
         input_labels (list): Lables of fmi_gym inputs, default [].
+        hidden_input_names (list): Labes of inputs not passed to the FMU, default [].
         action_names (list): Lables of fmi_gym actions, default [].
         action_min (np.array): Lower action limit, default -1e6.
         action_max (np.array): Upper action limit, default 1e6.
@@ -35,12 +37,19 @@ def get_default_parameter():
         external_observations (dict): Observations which are calculated outside of FMU and default values, default {}.
         reward_names (list): Lables of fmi_gym rewards, default [].
         
-    The #class must be defined as:
+    The #classA must be defined as:
     
     # Initialize (fmi_gym_parameter: dict)
     x = yourclass(fmi_gym_parameter)
     # Evaluate (data: pd.DataFrame, init: bool)
     data = x.do_calc(data, init)
+    
+    The #classB must be defined as:
+    
+    # Initialize (fmi_gym_parameter: dict)
+    x = yourclass(fmi_gym_parameter)
+    # Evaluate (data: pd.DataFrame, init: bool)
+    data, fmi_gym_parameter = x.do_calc(data, fmi_gym_parameter, init)
         
     Returns
     -------
@@ -57,13 +66,14 @@ def get_default_parameter():
     parameter['reset_on_init'] = False
     parameter['store_data'] = False
     parameter['init_fmu'] = True
+    parameter['stateprocessor'] = None
     parameter['resetprocessor'] = None
     
     # fmu parameter
     parameter['fmu_step_size'] = 60*60
     parameter['fmu_path'] = ''
     parameter['fmu_start_time'] = 0
-    parameter['fmu_warmup_time'] = 0
+    parameter['fmu_warmup_time'] = None
     parameter['fmu_final_time'] = 24*60*60
     parameter['fmu_loglevel'] = 4
     parameter['fmu_kind'] = 'cs'
@@ -74,6 +84,7 @@ def get_default_parameter():
     parameter['inputs'] = {}
     parameter['inputs_map'] = {}
     parameter['input_labels'] = []
+    parameter['hidden_input_names'] = []
     parameter['action_names'] = []
     parameter['action_min'] = -1e6
     parameter['action_max'] = 1e6
