@@ -130,23 +130,24 @@ class fmi_gym(gym.Env):
         self.fmu.do_step(current_t=self.fmu_time, step_size=step_size)
         self.fmu_time = self.fmu.time
         
-    def evaluate_fmu(self, inputs):
+    def evaluate_fmu(self, inputs, advance_fmu=True):
         ''' evaluate the fmu '''
-        inputs = inputs.copy()
-        if self.parameter['inputs_map']:
-            inputs = inputs.rename(columns={v:k for k,v in self.parameter['inputs_map'].items()})
-        del inputs['time']
-        
-        # Set inputs
-        cols = [c for c in inputs.columns if c not in self.parameter['hidden_input_names']]
-        self.fmu.set(inputs[cols].columns.values, inputs[cols].values[0])
+        if advance_fmu:
+            inputs = inputs.copy()
+            if self.parameter['inputs_map']:
+                inputs = inputs.rename(columns={v:k for k,v in self.parameter['inputs_map'].items()})
+            del inputs['time']
 
-        # Compute FMU
-        step_size = inputs.index[0] - self.fmu_time
-        self.fmu.do_step(current_t=self.fmu_time, step_size=step_size)
-        
-        # Results
-        self.fmu_time = self.fmu.time
+            # Set inputs
+            cols = [c for c in inputs.columns if c not in self.parameter['hidden_input_names']]
+            self.fmu.set(inputs[cols].columns.values, inputs[cols].values[0])
+
+            # Compute FMU
+            step_size = inputs.index[0] - self.fmu_time
+            self.fmu.do_step(current_t=self.fmu_time, step_size=step_size)
+
+            # Results
+            self.fmu_time = self.fmu.time
         names = self.parameter['fmu_observation_names'] + self.parameter['hidden_observation_names'] + \
             self.parameter['reward_names']
         res = self.fmu.get(names)
@@ -154,11 +155,14 @@ class fmi_gym(gym.Env):
 
         return res
 
-    def step(self, action):
+    def step(self, action, advance_fmu=True):
         ''' do step '''
         
         # Get internal FMU inputs
-        data = pd.DataFrame({'time': [self.fmu_time+self.parameter['fmu_step_size']]})
+        if advance_fmu:
+            data = pd.DataFrame({'time': [self.fmu_time+self.parameter['fmu_step_size']]})
+        else:
+            data = self.data
         
         # Parse inputs
         action = pd.DataFrame(action, columns=self.parameter['input_labels'])
@@ -170,7 +174,7 @@ class fmi_gym(gym.Env):
             data = self.preprocessor.do_calc(data, self.init)
         
         # Evaluate FMU 
-        res = self.evaluate_fmu(data)
+        res = self.evaluate_fmu(data, advance_fmu=advance_fmu)
         for k,v in res.items():
             data[k] = v
             
@@ -194,7 +198,7 @@ class fmi_gym(gym.Env):
             done = False
         self.init = False
         if self.parameter['store_data']:
-            if self.data.empty:
+            if self.data.empty or not advance_fmu:
                 self.data = data
             else:
                 self.data = pd.concat([self.data, data])
@@ -211,12 +215,8 @@ class fmi_gym(gym.Env):
         # Load FMU
         if not self.fmu_loaded and self.parameter['init_fmu']:
             self.configure_fmu()
-        for k in self.parameter['observation_names']:
-            if k in self.parameter['fmu_observation_names']:
-                self.data.loc[0, k] = self.fmu.get(k)
-            else:
-                self.data.loc[0, k] = self.parameter['external_observations'][k]
-        self.state = self.data[self.parameter['observation_names']].values
+        action = [[0] * len(self.parameter['input_labels'])]
+        self.state, _, _, _ = self.step(action, advance_fmu=False)   
         return self.state
         
     def render(self):
