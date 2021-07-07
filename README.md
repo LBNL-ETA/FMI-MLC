@@ -10,7 +10,7 @@ The interfacing of simulation models with machine learning algorithms such as [r
 *Please note that the FMI-MLC package is still under active development. Please open an issue for specific questions*
 
 ## Getting Started
-The following link permits users to clone the source directory containing the [FMI-MLC](https://github.com/LBNL-ETA/FMI-MLC) package. The package can then be installed using `pip install .` within the directory.
+The following link permits users to clone the source directory containing the [FMI-MLC](https://github.com/LBNL-ETA/FMI-MLC) package. The package can then be installed using `pip install .` within the directory. While a user can provide a custom FMU handler, it is recommended to also install [PyFMI](https://github.com/modelon-community/PyFMI). FMI-MLC will default to PyFMI if no custom handler is provided.
 
 ## Example
 To illustrate the functionality of FMI-MLC, example Jupyter notebooks can be found [here](examples).

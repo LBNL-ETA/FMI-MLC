@@ -91,8 +91,12 @@ class fmi_gym(gym.Env):
         if pyfmi != None:
             self.load_fmu = pyfmi            
         else:
-            from pyfmi import load_fmu
-            self.load_fmu = load_fmu
+            try:
+                from pyfmi import load_fmu
+                self.load_fmu = load_fmu
+            except Exception as e:
+                print('ERROR: The "pyfmi" package was not found. Please install.')
+                raise e
             
     def configure_fmu(self):
         '''
