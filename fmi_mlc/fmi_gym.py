@@ -219,6 +219,7 @@ class fmi_gym(gym.Env):
         # Load FMU
         if not self.fmu_loaded and self.parameter['init_fmu']:
             self.configure_fmu()
+            self.data['time'] = self.fmu_time
         action = [[0] * len(self.parameter['input_labels'])]
         self.state, _, _, _ = self.step(action, advance_fmu=False)   
         return self.state
