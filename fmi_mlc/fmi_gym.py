@@ -28,7 +28,7 @@ class fmi_gym(gym.Env):
         self.init = True
         
         # Parse Configuration
-        self.seed = self.parameter['seed']
+        self.seed_int = self.parameter['seed']
         self.precision = eval('np.{}'.format(self.parameter['precision']))
         self.parameter['fmu_observation_names'] = list(set(self.parameter['observation_names']) \
                                                        - set(self.parameter['external_observations'].keys()))        
@@ -65,20 +65,20 @@ class fmi_gym(gym.Env):
             
         self.action_space = spaces.Box(low=self.parameter['action_min'],
                                        high=self.parameter['action_max'],
-                                       shape=(1, len(self.parameter['action_names'])),
+                                       shape=(len(self.parameter['action_names']), ),
                                        dtype=self.precision)
-        self.action_space.np_random.seed(self.seed)
+        self.action_space.np_random.seed(self.seed_int)
 
         self.observation_space = spaces.Box(low=self.parameter['observation_min'],
                                             high=self.parameter['observation_max'],
-                                            shape=(1, len(self.parameter['observation_names'])),
+                                            shape=(len(self.parameter['observation_names']), ),
                                             dtype=self.precision)
-        self.observation_space.np_random.seed(self.seed)
+        self.observation_space.np_random.seed(self.seed_int)
         
         if self.parameter['reset_on_init']:
             self.state = self.reset()
         else:
-            self.state = np.array([[np.nan]*len(self.parameter['observation_names'])])        
+            self.state = np.array([np.nan]*len(self.parameter['observation_names']))        
         
     def setup_pyfmi(self, pyfmi):
         '''
@@ -193,7 +193,7 @@ class fmi_gym(gym.Env):
         # Outputs
         reward = data['reward'].values[0]
         info = {'data': data.to_json()}
-        self.state = data[self.parameter['observation_names']].values
+        self.state = data[self.parameter['observation_names']].values[0]
         if self.stateprocessor:
             self.state = self.stateprocessor.do_calc(self.state, self.init)
         if self.fmu_time >= self.parameter['fmu_final_time']:
