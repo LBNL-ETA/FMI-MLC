@@ -148,7 +148,14 @@ class fmi_gym(gym.Env):
 
             # Compute FMU
             step_size = inputs.index[0] - self.fmu_time
-            self.fmu.do_step(current_t=self.fmu_time, step_size=step_size)
+            try:
+                self.fmu.do_step(current_t=self.fmu_time, step_size=step_size)
+            except Exception as e:
+                print('ERROR: Could not evaluate the FMU.')
+                print('See log for more information (set "fmu_loglevel" >= 3).')
+                print('Inputs:\n{}'.format(inputs))
+                print('States:\n{}'.format(self.state))
+                raise e
 
             # Results
             self.fmu_time = self.fmu.time
@@ -169,7 +176,7 @@ class fmi_gym(gym.Env):
             data = self.data
         
         # Parse inputs
-        action = pd.DataFrame(action, columns=self.parameter['input_labels'])
+        action = pd.DataFrame([action], columns=self.parameter['input_labels'])
         data = pd.concat([data, action], axis=1)
         data.index = data['time'].values
         
@@ -220,7 +227,7 @@ class fmi_gym(gym.Env):
         if not self.fmu_loaded and self.parameter['init_fmu']:
             self.configure_fmu()
             self.data['time'] = self.fmu_time
-        action = [[0] * len(self.parameter['input_labels'])]
+        action = np.array([0] * len(self.parameter['input_labels']))
         self.state, _, _, _ = self.step(action, advance_fmu=False)   
         return self.state
         
