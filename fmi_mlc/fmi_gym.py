@@ -218,6 +218,7 @@ class fmi_gym(gym.Env):
     
     def reset(self):
         ''' reset environment '''
+        self.close()
         self.fmu_loaded = False
         self.init = True
         self.data = pd.DataFrame({'time': [0]}, index=[0])
@@ -241,4 +242,4 @@ class fmi_gym(gym.Env):
             self.fmu.terminate()
         except Exception as e:
             print(e)
-        self.fmu=None
+        self.fmu = None
