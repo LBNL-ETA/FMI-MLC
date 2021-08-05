@@ -239,7 +239,8 @@ class fmi_gym(gym.Env):
     def close(self):
         ''' unload fmu here '''
         try:
-            self.fmu.terminate()
+            if self.fmu_loaded:
+                self.fmu.terminate()
         except Exception as e:
             print(e)
         self.fmu = None
