@@ -1,7 +1,7 @@
 pip3 -qq install pylint flake8 pytest
 
 echo "Running pylint"
-pylint $(find .. -name "*.py" -not -path "../build/*")
+pylint --fail-under=8 $(find .. -name "*.py" -not -path "../build/*")
 
 echo "Running flake8"
 # stop the build if there are Python syntax errors or undefined names
