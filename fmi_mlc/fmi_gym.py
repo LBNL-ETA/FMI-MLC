@@ -245,9 +245,10 @@ class fmi_gym(gym.Env):
             self.data, self.parameter = \
                 self.resetprocessor.do_calc(self.data, self.parameter, self.init)
         # Load FMU
+        self.fmu_time = self.parameter['fmu_start_time']
         if not self.fmu_loaded and self.parameter['init_fmu'] and self.use_fmu:
             self.configure_fmu()
-            self.data['time'] = self.fmu_time
+        self.data['time'] = self.fmu_time
         action = np.array([0] * len(self.parameter['action_names']))
         self.state, _, _, _ = self.step(action, advance_fmu=False)
         return self.state
