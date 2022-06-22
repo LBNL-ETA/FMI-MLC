@@ -203,7 +203,8 @@ class fmi_gym(gym.Env):
             for k,v in res.items():
                 data[k] = v
         else:
-            self.fmu_time += self.parameter['fmu_step_size']
+            if advance_fmu:
+                self.fmu_time += self.parameter['fmu_step_size']
 
         # Compute postprocessing (if specified)
         if self.postprocessor:
