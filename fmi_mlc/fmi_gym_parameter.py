@@ -1,13 +1,17 @@
+"""
+FMI-MLC default configuration.
+"""
+
 def get_default_parameter():
     '''
     Returns the default parameters for fmi_gym. Description:
-    
+
     fmi_gym parameter:
         precision (str): Precision of data exchange, default 'float32'.
         seed (int): Seed for np.random, default None.
         preprocessor (#classA): Custom Python function to pre-process data before FMU, default None.
         postprocessor (#classA): Custom Python function to post-process data after FMU, default None.
-        reset_on_init (bool): Reset environment when initializing, default False. 
+        reset_on_init (bool): Reset environment when initializing, default False.
         store_data (bool): Store inputs, FMU outputs, and reward in self.data, default False.
         init_fmu (bool): Initialize FMU when fmi_gym resets, default True.
         stateprocessor (#classA): Custom Python function to midify state object, default None.
@@ -36,28 +40,27 @@ def get_default_parameter():
         hidden_observation_names (list): List of hidden observations acquired but not returned as state, default [].
         external_observations (dict): Observations which are calculated outside of FMU and default values, default {}.
         reward_names (list): Lables of fmi_gym rewards, default [].
-        
+
     The #classA must be defined as:
-    
+
     # Initialize (fmi_gym_parameter: dict)
     x = yourclass(fmi_gym_parameter)
     # Evaluate (data: pd.DataFrame, init: bool)
     data = x.do_calc(data, init)
-    
+
     The #classB must be defined as:
-    
+
     # Initialize (fmi_gym_parameter: dict)
     x = yourclass(fmi_gym_parameter)
     # Evaluate (data: pd.DataFrame, init: bool)
     data, fmi_gym_parameter = x.do_calc(data, fmi_gym_parameter, init)
-        
+
     Returns
     -------
     parameter (dict): Dictionary of parameters.
-    
     '''
     parameter = {}
-    
+
     # fmi_gym parameter
     parameter['precision'] = 'float64'
     parameter['seed'] = None
@@ -68,7 +71,7 @@ def get_default_parameter():
     parameter['init_fmu'] = True
     parameter['stateprocessor'] = None
     parameter['resetprocessor'] = None
-    
+
     # fmu parameter
     parameter['fmu_step_size'] = 60*60
     parameter['fmu_path'] = ''
@@ -79,7 +82,7 @@ def get_default_parameter():
     parameter['fmu_kind'] = 'cs'
     parameter['fmu_tolerance'] = 1e-6
     parameter['fmu_param'] = {}
-    
+
     # data exchange parameter
     parameter['inputs'] = {}
     parameter['inputs_map'] = {}

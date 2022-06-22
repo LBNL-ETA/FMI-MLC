@@ -1,4 +1,8 @@
 # FMI-MLC
+
+![Actions Status](https://github.com/LBNL-ETA/FMI-MLC/workflows/Syntax/badge.svg)
+![Actions Status](https://github.com/LBNL-ETA/FMI-MLC/workflows/UnitTests/badge.svg)
+
 #### Functional Mock-up Interface - Machine Learning Center
 ---
 

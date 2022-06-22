@@ -1,11 +1,24 @@
+"""
+Setup file for the Functional Mock-up Interface - Machine Learning Center.
+"""
+
 import setuptools
 
-with open("README.md", "r") as f:
+# description
+with open('README.md', 'r', encoding='utf8') as f:
     long_description = f.read()
+
+# requirements
+with open('requirements.txt', 'r', encoding='utf8') as f:
+    install_requires = f.read().splitlines()
+
+# version
+import fmi_mlc.__init__ as base
+__version__ = base.__version__
 
 setuptools.setup(
     name="FMI-MLC",
-    version="1.0.0",
+    version=__version__,
     author="Gehbauer, Christoph",
     description="Functional Mock-up Interface - Machine Learning Center",
     license_files = ['license.txt'],
@@ -21,5 +34,5 @@ setuptools.setup(
     ],
     packages=setuptools.find_packages(),
     python_requires=">=3.6",
-    install_requires= ['gym', 'pandas', 'numpy']
+    install_requires=install_requires
 )
