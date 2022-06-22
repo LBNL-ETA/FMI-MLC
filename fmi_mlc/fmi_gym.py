@@ -189,7 +189,7 @@ class fmi_gym(gym.Env):
             data = self.data
 
         # Parse inputs
-        action = pd.DataFrame([action], columns=self.parameter['input_labels'])
+        action = pd.DataFrame([action], columns=self.parameter['action_names'])
         data = pd.concat([data, action], axis=1)
         data.index = data['time'].values
 
@@ -247,7 +247,7 @@ class fmi_gym(gym.Env):
         if not self.fmu_loaded and self.parameter['init_fmu'] and self.use_fmu:
             self.configure_fmu()
             self.data['time'] = self.fmu_time
-        action = np.array([0] * len(self.parameter['input_labels']))
+        action = np.array([0] * len(self.parameter['action_names']))
         self.state, _, _, _ = self.step(action, advance_fmu=False)
         return self.state
 

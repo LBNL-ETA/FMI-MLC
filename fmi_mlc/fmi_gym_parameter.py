@@ -29,7 +29,6 @@ def get_default_parameter():
     data exchange parameter:
         inputs (dict): Static inputs of the FMU to be set on do_step, default {}.
         inputs_map (dict): Renaming of fmi_gym inputs to FMU inputs, default {}.
-        input_labels (list): Lables of fmi_gym inputs, default [].
         hidden_input_names (list): Labes of inputs not passed to the FMU, default [].
         action_names (list): Lables of fmi_gym actions, default [].
         action_min (np.array): Lower action limit, default -1e6.
@@ -86,7 +85,6 @@ def get_default_parameter():
     # data exchange parameter
     parameter['inputs'] = {}
     parameter['inputs_map'] = {}
-    parameter['input_labels'] = []
     parameter['hidden_input_names'] = []
     parameter['action_names'] = []
     parameter['action_min'] = -1e6
