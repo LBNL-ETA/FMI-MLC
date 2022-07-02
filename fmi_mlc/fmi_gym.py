@@ -38,6 +38,7 @@ class fmi_gym(gym.Env):
             - set(self.parameter['external_observations'].keys()))
         self.fmu_time = 0
         self.data = pd.DataFrame()
+        self.data_all = []
         self.fmu_loaded = False
         self.fmu = None
 
@@ -232,6 +233,8 @@ class fmi_gym(gym.Env):
                 self.data = data
             else:
                 self.data = pd.concat([self.data, data])
+            if self.parameter['store_all_data'] and done:
+                self.data_all.append(self.data.copy(deep=True))
 
         return self.state, reward, done, info
 

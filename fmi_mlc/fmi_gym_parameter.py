@@ -13,6 +13,7 @@ def get_default_parameter():
         postprocessor (#classA): Custom Python function to post-process data after FMU, default None.
         reset_on_init (bool): Reset environment when initializing, default False.
         store_data (bool): Store inputs, FMU outputs, and reward in self.data, default False.
+        store_all_data (bool): Store all episode data in self.data_all. store_data must be set to True. Default False.
         init_fmu (bool): Initialize FMU when fmi_gym resets, default True.
         stateprocessor (#classA): Custom Python function to midify state object, default None.
         resetprocessor (#classB): Custom Python function executed on fmi_gym reset, default None.
@@ -67,6 +68,7 @@ def get_default_parameter():
     parameter['postprocessor'] = None
     parameter['reset_on_init'] = False
     parameter['store_data'] = False
+    parameter['store_all_data'] = False
     parameter['init_fmu'] = True
     parameter['stateprocessor'] = None
     parameter['resetprocessor'] = None
