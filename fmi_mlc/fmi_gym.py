@@ -214,6 +214,8 @@ class fmi_gym(gym.Env):
         # Compute reward
         if self.parameter['reward_names']:
             data['reward'] = data[self.parameter['reward_names']].sum(axis=1)
+        elif 'reward' in data.columns:
+            pass
         else:
             data['reward'] = -1
 
