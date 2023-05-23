@@ -8,7 +8,10 @@ import gym
 import numpy as np
 import pandas as pd
 
-root = os.path.dirname(os.path.realpath(__file__))
+try:
+    root = os.path.dirname(os.path.realpath(__file__))
+except:
+    root = os.getcwd()
 sys.path.append(root)
 from fmi_gym_parameter import get_default_parameter
 
@@ -79,13 +82,11 @@ class fmi_gym(gym.Env):
                                            high=self.parameter['action_max'],
                                            shape=(len(self.parameter['action_names']), ),
                                            dtype=self.precision)
-        self.action_space.np_random.seed(self.seed_int)
 
         self.observation_space = gym.spaces.Box(low=self.parameter['observation_min'],
                                                 high=self.parameter['observation_max'],
                                                 shape=(len(self.parameter['observation_names']), ),
                                                 dtype=self.precision)
-        self.observation_space.np_random.seed(self.seed_int)
 
         if self.parameter['reset_on_init']:
             self.state = self.reset()

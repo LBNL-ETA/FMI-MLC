@@ -62,7 +62,7 @@ def get_default_parameter():
     parameter = {}
 
     # fmi_gym parameter
-    parameter['precision'] = 'float64'
+    parameter['precision'] = 'float'
     parameter['seed'] = None
     parameter['preprocessor'] = None
     parameter['postprocessor'] = None
