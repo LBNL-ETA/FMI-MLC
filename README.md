@@ -16,6 +16,16 @@ The interfacing of simulation models with machine learning algorithms such as [r
 ## Getting Started
 The following link permits users to clone the source directory containing the [FMI-MLC](https://github.com/LBNL-ETA/FMI-MLC) package. The package can then be installed using `pip install .` within the directory. While a user can provide a custom FMU handler, it is recommended to also install [PyFMI](https://github.com/modelon-community/PyFMI). FMI-MLC will default to PyFMI if no custom handler is provided.
 
+Alternatively, an experimental Docker container is available with the PyFMI dependencies already installed:
+
+```bash
+set username=[YOURUSERNAME]
+set homedir=[FULL/PATH/TO/YOUR/LOCAL/HOME/DIRECTORY]
+set container=cgehbauer/jupyter_radiance_eplus:v1
+docker run -p 127.0.0.1:8889:8888 -v %homedir%:/home/%username% -it %container% bash -c "cd /home/%username% && jupyter notebook --ip=0.0.0.0 --allow-root --no-browser --NotebookApp.token=''"
+```
+ 
+
 ## Example
 To illustrate the functionality of FMI-MLC, example Jupyter notebooks can be found [here](examples).
 
