@@ -9,14 +9,18 @@ def get_default_parameter():
     fmi_gym parameter:
         precision (str): Precision of data exchange, default 'float32'.
         seed (int): Seed for np.random, default None.
-        preprocessor (#classA): Custom Python function to pre-process data before FMU, default None.
-        postprocessor (#classA): Custom Python function to post-process data after FMU, default None.
+        preprocessor (#classA): Custom Python function to pre-process data
+                                before FMU, default None.
+        postprocessor (#classA): Custom Python function to post-process data
+                                 after FMU, default None.
         reset_on_init (bool): Reset environment when initializing, default False.
         store_data (bool): Store inputs, FMU outputs, and reward in self.data, default False.
-        store_all_data (bool): Store all episode data in self.data_all. store_data must be set to True. Default False.
+        store_all_data (bool): Store all episode data in self.data_all.
+                               The flag "store_data" must be set to True. Default False.
         init_fmu (bool): Initialize FMU when fmi_gym resets, default True.
         stateprocessor (#classA): Custom Python function to midify state object, default None.
         resetprocessor (#classB): Custom Python function executed on fmi_gym reset, default None.
+        ignore_reset (bool): Ignore the reset command (keep fmu/states), default False.
     fmu parameter:
         fmu_step_size (int): Step size of the FMU in seconds, default 60*60.
         fmu_path (str): Path to the .fmu file, default ''.
@@ -37,8 +41,10 @@ def get_default_parameter():
         observation_names (list): Lables of fmi_gym observations, default [].
         observation_min (np.array): Lower observation limit, default -1e6.
         observation_max (np.array): Upper observation limit, default -1e6.
-        hidden_observation_names (list): List of hidden observations acquired but not returned as state, default [].
-        external_observations (dict): Observations which are calculated outside of FMU and default values, default {}.
+        hidden_observation_names (list): List of hidden observations acquired but
+                                         not returned as state, default [].
+        external_observations (dict): Observations which are calculated outside of FMU
+                                      and default values, default {}.
         reward_names (list): Lables of fmi_gym rewards, default [].
 
     The #classA must be defined as:
@@ -72,6 +78,7 @@ def get_default_parameter():
     parameter['init_fmu'] = True
     parameter['stateprocessor'] = None
     parameter['resetprocessor'] = None
+    parameter['ignore_reset'] = False
 
     # fmu parameter
     parameter['fmu_step_size'] = 60*60

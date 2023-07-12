@@ -243,13 +243,22 @@ class fmi_gym(gym.Env):
 
     def reset(self):
         ''' reset environment '''
-        self.close()
-        self.fmu_loaded = False
-        self.init = True
+        if self.parameter['ignore_reset']:
+            # ignore the reset command and continue with loaded fmu/states
+            episode_duration = self.parameter['fmu_final_time'] \
+                               - self.parameter['fmu_start_time']
+            self.parameter['fmu_start_time'] = self.parameter['fmu_final_time']
+            self.parameter['fmu_final_time'] += episode_duration
+        else:
+            self.close()
+            self.fmu_loaded = False            
+
         self.data = pd.DataFrame({'time': [0]}, index=[0])
+        self.init = True
         if self.resetprocessor:
             self.data, self.parameter = \
                 self.resetprocessor.do_calc(self.data, self.parameter, self.init)
+
         # Load FMU
         self.fmu_time = self.parameter['fmu_start_time']
         if not self.fmu_loaded and self.parameter['init_fmu'] and self.use_fmu:
