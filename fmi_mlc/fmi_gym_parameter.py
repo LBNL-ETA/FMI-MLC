@@ -27,6 +27,11 @@ def get_default_parameter():
         fmu_start_time (float): Start time of the FMU in seconds, default 0.
         fmu_warmup_time (float): The warmup time of the FMU in seconds, default None.
         fmu_final_time (float): Final time of the FMU in seconds, default 24*60*60.
+        fmu_episode_duration (float): Define episode duration. The default (None)
+                                      automatrically uses the "fmu_final_time" to determine the
+                                      end of an episode. This parameter is mainly used when
+                                      multiple episodes are performed sequentially, in
+                                      conjunction with the "ignore_reset" flag.
         fmu_loglevel (int): Log level of the fmu with 0: none and 5: debug, default 4.
         fmu_kind (str): Type of FMU where currently only co-simulation is supported, default 'cs'.
         fmu_tolerance (float): Internal tolerance of the FMU solver, default 1e-6.
@@ -86,6 +91,7 @@ def get_default_parameter():
     parameter['fmu_start_time'] = 0
     parameter['fmu_warmup_time'] = None
     parameter['fmu_final_time'] = 24*60*60
+    parameter['fmu_episode_duration'] = None
     parameter['fmu_loglevel'] = 4
     parameter['fmu_kind'] = 'cs'
     parameter['fmu_tolerance'] = 1e-6

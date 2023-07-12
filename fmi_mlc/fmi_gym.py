@@ -88,6 +88,14 @@ class fmi_gym(gym.Env):
                                                 shape=(len(self.parameter['observation_names']), ),
                                                 dtype=self.precision)
 
+        if self.parameter['fmu_episode_duration']:
+            self.episode_duration = self.parameter['fmu_episode_duration']
+        else:
+            action_start_time = self.parameter['fmu_warmup_time'] \
+                if self.parameter['fmu_warmup_time'] else self.parameter['fmu_start_time']
+            self.episode_duration = self.parameter['fmu_final_time'] \
+                                    - action_start_time
+
         if self.parameter['reset_on_init']:
             self.state = self.reset()
         else:
@@ -141,9 +149,7 @@ class fmi_gym(gym.Env):
 
         # Warmup
         self.fmu_time = self.fmu.time
-        start_time = self.parameter['fmu_warmup_time'] if self.parameter['fmu_warmup_time'] \
-            else self.parameter['fmu_start_time']
-        step_size = start_time - self.fmu_time
+        step_size = self.action_start_time - self.fmu_time
         self.fmu.do_step(current_t=self.fmu_time, step_size=step_size)
         self.fmu_time = self.fmu.time
 
@@ -226,7 +232,7 @@ class fmi_gym(gym.Env):
         self.state = data[self.parameter['observation_names']].values[0]
         if self.stateprocessor:
             self.state = self.stateprocessor.do_calc(self.state, self.init)
-        if self.fmu_time >= self.parameter['fmu_final_time']:
+        if self.fmu_time >= self.action_start_time + self.episode_duration:
             done = True
         else:
             done = False
@@ -243,12 +249,14 @@ class fmi_gym(gym.Env):
 
     def reset(self):
         ''' reset environment '''
-        if self.parameter['ignore_reset']:
+
+        if self.parameter['ignore_reset'] and self.fmu_loaded:
             # ignore the reset command and continue with loaded fmu/states
-            episode_duration = self.parameter['fmu_final_time'] \
-                               - self.parameter['fmu_start_time']
-            self.parameter['fmu_start_time'] = self.parameter['fmu_final_time']
-            self.parameter['fmu_final_time'] += episode_duration
+            self.parameter['fmu_start_time'] += self.episode_duration
+            self.parameter['fmu_final_time'] += self.episode_duration
+            if self.parameter['fmu_warmup_time']:
+                print('WARNING: Disabling "fmu_warmup_time" when "ignore_reset" is set.')
+                self.parameter['fmu_warmup_time'] = None
         else:
             self.close()
             self.fmu_loaded = False            
@@ -261,6 +269,8 @@ class fmi_gym(gym.Env):
 
         # Load FMU
         self.fmu_time = self.parameter['fmu_start_time']
+        self.action_start_time = self.parameter['fmu_warmup_time'] \
+            if self.parameter['fmu_warmup_time'] else self.parameter['fmu_start_time']
         if not self.fmu_loaded and self.parameter['init_fmu'] and self.use_fmu:
             self.configure_fmu()
         self.data['time'] = self.fmu_time
