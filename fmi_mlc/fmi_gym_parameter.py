@@ -21,6 +21,7 @@ def get_default_parameter():
         stateprocessor (#classA): Custom Python function to midify state object, default None.
         resetprocessor (#classB): Custom Python function executed on fmi_gym reset, default None.
         ignore_reset (bool): Ignore the reset command (keep fmu/states), default False.
+        store_warmup (bool): Store the data collected during warmup, default False.
     fmu parameter:
         fmu_step_size (int): Step size of the FMU in seconds, default 60*60.
         fmu_path (str): Path to the .fmu file, default ''.
@@ -84,6 +85,7 @@ def get_default_parameter():
     parameter['stateprocessor'] = None
     parameter['resetprocessor'] = None
     parameter['ignore_reset'] = False
+    parameter['store_warmup'] = False
 
     # fmu parameter
     parameter['fmu_step_size'] = 60*60

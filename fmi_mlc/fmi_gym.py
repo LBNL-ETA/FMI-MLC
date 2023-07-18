@@ -147,12 +147,6 @@ class fmi_gym(gym.Env):
         self.fmu.initialize()
         self.fmu_loaded = True
 
-        # Warmup
-        self.fmu_time = self.fmu.time
-        step_size = self.action_start_time - self.fmu_time
-        self.fmu.do_step(current_t=self.fmu_time, step_size=step_size)
-        self.fmu_time = self.fmu.time
-
     def evaluate_fmu(self, inputs, advance_fmu=True):
         ''' evaluate the fmu '''
         if advance_fmu:
@@ -276,6 +270,14 @@ class fmi_gym(gym.Env):
         self.data['time'] = self.fmu_time
         action = np.array([0] * len(self.parameter['action_names']))
         self.state, _, _, _ = self.step(action, advance_fmu=False)
+
+        # Warmup
+        if self.parameter['fmu_warmup_time']:
+            while self.fmu_time < self.action_start_time:
+                self.state, _, _, _ = self.step(action)
+            if not self.parameter['store_warmup']:
+                self.data = self.data.iloc[-1:]
+
         return self.state
 
     def render(self):
