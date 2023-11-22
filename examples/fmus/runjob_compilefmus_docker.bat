@@ -1,0 +1,1 @@
+docker run -v C:\Users\Christoph:/home/Christoph -it --entrypoint="" cgehbauer/jmodelica bash -c "cd /home/Christoph/Documents/PublicRepos/FMI-MLC/example/fmus && python compile_fmus.py"
